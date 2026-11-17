@@ -118,13 +118,17 @@ def handle_mqtt_fan_power(payload: str):
     """Handle MQTT command for fan power.
     
     Args:
-        payload: MQTT message payload. Expected values: "ON" or "OFF" (case-insensitive)
+        payload: MQTT message payload. Expected values: "ON"/"OFF" or "true"/"false" (case-insensitive)
     
     On success, updates the cached fan state and publishes the new state to MQTT status topic.
     Logs warnings for invalid payloads and errors if the command fails.
     """
     try:
-        payload_upper = payload.upper()
+        payload_upper = payload.strip().upper()
+        if payload_upper == "TRUE":
+            payload_upper = "ON"
+        elif payload_upper == "FALSE":
+            payload_upper = "OFF"
         if payload_upper in ["ON", "OFF"]:
             logger.info(f"MQTT command: Set fan power to {payload_upper}")
             if senseme_client:
@@ -189,7 +193,11 @@ def handle_mqtt_light_power(payload: str):
     Logs warnings for invalid payloads and errors if the command fails.
     """
     try:
-        payload_upper = payload.upper()
+        payload_upper = payload.strip().upper()
+        if payload_upper == "TRUE":
+            payload_upper = "ON"
+        elif payload_upper == "FALSE":
+            payload_upper = "OFF"
         if payload_upper in ["ON", "OFF"]:
             logger.info(f"MQTT command: Set light power to {payload_upper}")
             if senseme_client:
